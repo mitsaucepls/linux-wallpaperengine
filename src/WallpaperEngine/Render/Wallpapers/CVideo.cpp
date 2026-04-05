@@ -11,8 +11,9 @@ using namespace WallpaperEngine::VideoPlayback::MPV;
 
 CVideo::CVideo (
     const Wallpaper& wallpaper, RenderContext& context, AudioContext& audioContext,
-    const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode
-) : CWallpaper (wallpaper, context, audioContext, scalingMode, clampMode) {
+    const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode,
+    const WallpaperState::TextureFlip& flipMode
+) : CWallpaper (wallpaper, context, audioContext, scalingMode, clampMode, flipMode) {
     // setup framebuffers
     this->setupFramebuffers ();
 

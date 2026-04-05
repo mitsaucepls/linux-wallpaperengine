@@ -243,6 +243,23 @@ ApplicationContext::ApplicationContext (int argc, char* argv[]) : m_argc (argc),
 
 void ApplicationContext::loadSettingsFromArgv () {
     std::string lastScreen;
+    const auto parseFlipMode = [] (const std::string& value) -> WallpaperEngine::Render::WallpaperState::TextureFlip {
+	if (value == "none") {
+	    return WallpaperEngine::Render::WallpaperState::TextureFlip::NoFlip;
+	}
+	if (value == "x") {
+	    return WallpaperEngine::Render::WallpaperState::TextureFlip::FlipX;
+	}
+	if (value == "y") {
+	    return WallpaperEngine::Render::WallpaperState::TextureFlip::FlipY;
+	}
+	if (value == "xy" || value == "yx") {
+	    return WallpaperEngine::Render::WallpaperState::TextureFlip::FlipXY;
+	}
+
+	sLog.exception ("Invalid flip mode: ", value);
+	return WallpaperEngine::Render::WallpaperState::TextureFlip::NoFlip;
+    };
 
     argparse::ArgumentParser program ("linux-wallpaperengine", "0.0", argparse::default_arguments::help);
 
@@ -305,6 +322,7 @@ void ApplicationContext::loadSettingsFromArgv () {
 	    this->settings.general.screenBackgrounds[lastScreen] = "";
 	    this->settings.general.screenScalings[lastScreen] = this->settings.render.window.scalingMode;
 	    this->settings.general.screenClamps[lastScreen] = this->settings.render.window.clamp;
+	    this->settings.general.screenFlips[lastScreen] = this->settings.render.window.flipMode;
 	})
 	.append ();
     backgroundGroup.add_argument ("-b", "--bg")
@@ -393,6 +411,22 @@ void ApplicationContext::loadSettingsFromArgv () {
 		this->settings.render.window.clamp = flags;
 	    }
 	});
+    backgroundGroup.add_argument ("--flip")
+	.help (
+	    "Flip mode to use when rendering the background, this applies to the previous --window or --screen-root "
+	    "output, or the default background if no other background is specified"
+	)
+	.choices ("none", "x", "y", "xy", "yx")
+	.action ([this, &lastScreen, &parseFlipMode] (const std::string& value) -> void {
+	    const auto mode = parseFlipMode (value);
+
+	    if (this->settings.render.mode == DESKTOP_BACKGROUND) {
+		this->settings.general.screenFlips[lastScreen] = mode;
+	    } else {
+		this->settings.render.window.flipMode = mode;
+	    }
+	})
+	.append ();
 
     auto& performanceGroup = program.add_group ("Performance options");
 

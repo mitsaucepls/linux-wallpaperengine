@@ -21,7 +21,16 @@ public:
 	StretchUVs,
     };
 
-    WallpaperState (const TextureUVsScaling& textureUVsMode, const uint32_t& clampMode);
+    enum class TextureFlip : uint8_t {
+	NoFlip = 0,
+	FlipX = 1,
+	FlipY = 2,
+	FlipXY = 3,
+    };
+
+    WallpaperState (
+	const TextureUVsScaling& textureUVsMode, const uint32_t& clampMode, const TextureFlip& textureFlipMode
+    );
 
     /**
      * Checks if any of the given values has changed
@@ -82,11 +91,17 @@ public:
     [[nodiscard]] uint32_t getClampingMode () const;
 
     /**
+     * @return The texture flip mode.
+     */
+    [[nodiscard]] TextureFlip getTextureFlipMode () const;
+
+    /**
      * Sets the texture scaling mode
      *
      * @param strategy
      */
     void setTextureUVsStrategy (TextureUVsScaling strategy);
+    void setTextureFlipMode (TextureFlip flipMode);
 
     /**
      * @return The width of viewport
@@ -135,5 +150,6 @@ private:
     // Texture scaling mode
     TextureUVsScaling m_textureUVsMode = TextureUVsScaling::DefaultUVs;
     uint32_t m_clampingMode = TextureFlags_NoFlags;
+    TextureFlip m_textureFlipMode = TextureFlip::NoFlip;
 };
 } // namespace WallpaperEngine::Render

@@ -22,6 +22,10 @@ glm::dvec2 WaylandMouseInput::position () const {
 }
 
 WallpaperEngine::Input::MouseClickStatus WaylandMouseInput::leftClick () const {
+    if (!this->m_waylandDriver.getApp ().getContext ().settings.mouse.enabled) {
+	return MouseClickStatus::Released;
+    }
+
     if (m_waylandDriver.viewportInFocus && m_waylandDriver.viewportInFocus->rendering) {
 	return m_waylandDriver.viewportInFocus->leftClick;
     }
@@ -30,6 +34,10 @@ WallpaperEngine::Input::MouseClickStatus WaylandMouseInput::leftClick () const {
 }
 
 WallpaperEngine::Input::MouseClickStatus WaylandMouseInput::rightClick () const {
+    if (!this->m_waylandDriver.getApp ().getContext ().settings.mouse.enabled) {
+	return MouseClickStatus::Released;
+    }
+
     if (m_waylandDriver.viewportInFocus && m_waylandDriver.viewportInFocus->rendering) {
 	return m_waylandDriver.viewportInFocus->rightClick;
     }

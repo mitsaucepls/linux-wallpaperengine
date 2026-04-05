@@ -15,8 +15,9 @@ using namespace WallpaperEngine::WebBrowser::CEF;
 
 CWeb::CWeb (
     const Wallpaper& wallpaper, RenderContext& context, AudioContext& audioContext, WebBrowserContext& browserContext,
-    const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode
-) : CWallpaper (wallpaper, context, audioContext, scalingMode, clampMode), m_browserContext (browserContext) {
+    const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode,
+    const WallpaperState::TextureFlip& flipMode
+) : CWallpaper (wallpaper, context, audioContext, scalingMode, clampMode, flipMode), m_browserContext (browserContext) {
     // setup framebuffers
     this->setupFramebuffers ();
 
@@ -81,6 +82,12 @@ void CWeb::renderFrame (const glm::ivec4& viewport) {
 }
 
 void CWeb::updateMouse (const glm::ivec4& viewport) {
+    if (!this->getContext ().getApp ().getContext ().settings.mouse.enabled) {
+	this->m_leftClick = WallpaperEngine::Input::MouseClickStatus::Released;
+	this->m_rightClick = WallpaperEngine::Input::MouseClickStatus::Released;
+	return;
+    }
+
     // update virtual mouse position first
     auto& input = this->getContext ().getInputContext ().getMouseInput ();
 

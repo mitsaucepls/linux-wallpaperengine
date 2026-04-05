@@ -22,8 +22,9 @@ using JSON = WallpaperEngine::Data::JSON::JSON;
 
 CScene::CScene (
     const Wallpaper& wallpaper, RenderContext& context, AudioContext& audioContext,
-    const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode
-) : CWallpaper (wallpaper, context, audioContext, scalingMode, clampMode) {
+    const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode,
+    const WallpaperState::TextureFlip& flipMode
+) : CWallpaper (wallpaper, context, audioContext, scalingMode, clampMode, flipMode) {
     // caller should check this, if not a std::bad_cast is good to throw
     auto scene = wallpaper.as<Scene> ();
 
@@ -268,8 +269,10 @@ void CScene::renderFrame (const glm::ivec4& viewport) {
     this->updateMouse (viewport);
 
     // update the parallax position if required
-    if (this->getScene ().camera.parallax.enabled->value->getBool ()
-	&& !this->getContext ().getApp ().getContext ().settings.mouse.disableparallax) {
+    if (!this->getContext ().getApp ().getContext ().settings.mouse.enabled
+	|| this->getContext ().getApp ().getContext ().settings.mouse.disableparallax) {
+	this->m_parallaxDisplacement = { 0.0f, 0.0f };
+    } else if (this->getScene ().camera.parallax.enabled->value->getBool ()) {
 	const float influence = this->getScene ().camera.parallax.mouseInfluence->value->getFloat ();
 	const float amount = this->getScene ().camera.parallax.amount->value->getFloat ();
 	const float delay = glm::min (
@@ -316,6 +319,16 @@ void CScene::renderFrame (const glm::ivec4& viewport) {
 }
 
 void CScene::updateMouse (const glm::ivec4& viewport) {
+    if (!this->getContext ().getApp ().getContext ().settings.mouse.enabled) {
+	this->m_mousePositionLast = this->m_mousePosition;
+
+	// Neutralize mouse-reactive wallpapers when mouse input is disabled.
+	const auto uvs = this->getState ().getTextureUVs ();
+	this->m_mousePosition.x = (uvs.ustart + uvs.uend) * 0.5f;
+	this->m_mousePosition.y = (uvs.vstart + uvs.vend) * 0.5f;
+	return;
+    }
+
     // update virtual mouse position first
     const glm::dvec2 position = this->getContext ().getInputContext ().getMouseInput ().position ();
 

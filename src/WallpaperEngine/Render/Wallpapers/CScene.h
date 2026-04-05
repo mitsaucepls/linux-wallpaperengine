@@ -16,7 +16,8 @@ class CScene final : public CWallpaper {
 public:
     CScene (
 	const Wallpaper& wallpaper, RenderContext& context, AudioContext& audioContext,
-	const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode
+	const WallpaperState::TextureUVsScaling& scalingMode, const uint32_t& clampMode,
+	const WallpaperState::TextureFlip& flipMode
     );
 
     ~CScene () override;

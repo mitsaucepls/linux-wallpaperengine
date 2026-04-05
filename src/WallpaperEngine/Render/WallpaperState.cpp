@@ -5,8 +5,10 @@
 
 using namespace WallpaperEngine::Render;
 
-WallpaperState::WallpaperState (const TextureUVsScaling& textureUVsMode, const uint32_t& clampMode) :
-    m_textureUVsMode (textureUVsMode), m_clampingMode (clampMode) { }
+WallpaperState::WallpaperState (
+    const TextureUVsScaling& textureUVsMode, const uint32_t& clampMode, const TextureFlip& textureFlipMode
+) :
+    m_textureUVsMode (textureUVsMode), m_clampingMode (clampMode), m_textureFlipMode (textureFlipMode) { }
 
 bool WallpaperState::hasChanged (
     const glm::ivec4& viewport, const bool& vflip, const int& projectionWidth, const int& projectionHeight
@@ -27,6 +29,14 @@ void WallpaperState::resetUVs () {
     } else {
 	this->m_UVs.vstart = 1.0f;
 	this->m_UVs.vend = 0.0f;
+    }
+
+    if (this->m_textureFlipMode == TextureFlip::FlipX || this->m_textureFlipMode == TextureFlip::FlipXY) {
+	std::swap (this->m_UVs.ustart, this->m_UVs.uend);
+    }
+
+    if (this->m_textureFlipMode == TextureFlip::FlipY || this->m_textureFlipMode == TextureFlip::FlipXY) {
+	std::swap (this->m_UVs.vstart, this->m_UVs.vend);
     }
 }
 
@@ -141,9 +151,13 @@ WallpaperState::TextureUVsScaling WallpaperState::getTextureUVsScaling () const 
 
 uint32_t WallpaperState::getClampingMode () const { return this->m_clampingMode; }
 
+WallpaperState::TextureFlip WallpaperState::getTextureFlipMode () const { return this->m_textureFlipMode; }
+
 void WallpaperState::setTextureUVsStrategy (WallpaperState::TextureUVsScaling strategy) {
     this->m_textureUVsMode = strategy;
 }
+
+void WallpaperState::setTextureFlipMode (WallpaperState::TextureFlip flipMode) { this->m_textureFlipMode = flipMode; }
 
 int WallpaperState::getViewportWidth () const { return this->m_viewport.width; }
 

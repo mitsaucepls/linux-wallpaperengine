@@ -10,6 +10,8 @@ GLFWMouseInput::GLFWMouseInput (const Render::Drivers::GLFWOpenGLDriver& driver)
 void GLFWMouseInput::update () {
     if (!this->m_driver.getApp ().getContext ().settings.mouse.enabled) {
 	this->m_reportedPosition = { 0, 0 };
+	this->m_leftClick = MouseClickStatus::Released;
+	this->m_rightClick = MouseClickStatus::Released;
 	return;
     }
 

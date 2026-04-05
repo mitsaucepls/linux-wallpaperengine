@@ -407,19 +407,23 @@ void WallpaperApplication::advancePlaylist (
 
 	const auto scalingIt = this->m_context.settings.general.screenScalings.find (screen);
 	const auto clampIt = this->m_context.settings.general.screenClamps.find (screen);
+	const auto flipIt = this->m_context.settings.general.screenFlips.find (screen);
 	const auto scaling = scalingIt != this->m_context.settings.general.screenScalings.end ()
 	    ? scalingIt->second
 	    : this->m_context.settings.render.window.scalingMode;
 	const auto clamp = clampIt != this->m_context.settings.general.screenClamps.end ()
 	    ? clampIt->second
 	    : this->m_context.settings.render.window.clamp;
+	const auto flip = flipIt != this->m_context.settings.general.screenFlips.end ()
+	    ? flipIt->second
+	    : this->m_context.settings.render.window.flipMode;
 
 	if (this->m_renderContext) {
 	    this->m_renderContext->setWallpaper (
 		screen,
 		WallpaperEngine::Render::CWallpaper::fromWallpaper (
 		    *this->m_backgrounds[screen]->wallpaper, *this->m_renderContext, *this->m_audioContext,
-		    this->m_browserContext.get (), scaling, clamp
+		    this->m_browserContext.get (), scaling, clamp, flip
 		)
 	    );
 	}
@@ -696,17 +700,21 @@ void WallpaperApplication::prepareOutputs () {
     for (const auto& [background, info] : this->m_backgrounds) {
 	const auto scalingIt = this->m_context.settings.general.screenScalings.find (background);
 	const auto clampIt = this->m_context.settings.general.screenClamps.find (background);
+	const auto flipIt = this->m_context.settings.general.screenFlips.find (background);
 	const auto scaling = scalingIt != this->m_context.settings.general.screenScalings.end ()
 	    ? scalingIt->second
 	    : this->m_context.settings.render.window.scalingMode;
 	const auto clamp = clampIt != this->m_context.settings.general.screenClamps.end ()
 	    ? clampIt->second
 	    : this->m_context.settings.render.window.clamp;
+	const auto flip = flipIt != this->m_context.settings.general.screenFlips.end ()
+	    ? flipIt->second
+	    : this->m_context.settings.render.window.flipMode;
 
 	m_renderContext->setWallpaper (
 	    background,
 	    WallpaperEngine::Render::CWallpaper::fromWallpaper (
-		*info->wallpaper, *m_renderContext, *m_audioContext, m_browserContext.get (), scaling, clamp
+		*info->wallpaper, *m_renderContext, *m_audioContext, m_browserContext.get (), scaling, clamp, flip
 	    )
 	);
     }

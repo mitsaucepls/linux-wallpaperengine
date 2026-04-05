@@ -77,6 +77,8 @@ public:
 	    std::map<std::string, WallpaperEngine::Render::WallpaperState::TextureUVsScaling> screenScalings;
 	    /** The clamping mode for different screens */
 	    std::map<std::string, TextureFlags> screenClamps;
+	    /** The flip mode for different screens */
+	    std::map<std::string, WallpaperEngine::Render::WallpaperState::TextureFlip> screenFlips;
 	    /** Playlists selected per screen */
 	    std::map<std::string, PlaylistDefinition> screenPlaylists;
 	    /** Playlist used in window mode */
@@ -109,6 +111,7 @@ public:
 		glm::ivec4 geometry;
 		TextureFlags clamp;
 		WallpaperEngine::Render::WallpaperState::TextureUVsScaling scalingMode;
+		WallpaperEngine::Render::WallpaperState::TextureFlip flipMode;
 	    } window;
 	} render;
 
@@ -157,6 +160,7 @@ public:
             .properties = {},
             .screenScalings = {},
             .screenClamps = {},
+            .screenFlips = {},
             .screenPlaylists = {},
             .defaultPlaylist = std::nullopt,
         },
@@ -170,6 +174,7 @@ public:
                 .geometry = {},
                 .clamp = TextureFlags_ClampUVs,
                 .scalingMode = WallpaperEngine::Render::WallpaperState::TextureUVsScaling::DefaultUVs,
+                .flipMode = WallpaperEngine::Render::WallpaperState::TextureFlip::NoFlip,
             },
         },
         .audio = {
